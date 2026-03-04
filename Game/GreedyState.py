@@ -2,8 +2,8 @@ from Structures.State import State
 
 
 class GreedyState(State):
-    def __init__(self, node):
-        super().__init__(node)
+    def __init__(self):
+        super().__init__()
 
     def from_file(self, path):
         with open(path, "r+", encoding="utf-8") as f:
@@ -45,21 +45,15 @@ class GreedyState(State):
         if pos != 0 and (self.size[0] * self.size[1]) % pos != 0:
             positions.append(pos - 1)
 
-        if self.node.parent != None:
-            lastPos = self.node.parent.value.getPos()
-        else:
-            lastPos = self.getPos()
+        validPositions = list(filter(lambda p: self.canMove(p), positions))
 
-        validPositions = list(
-            filter(lambda p: self.canMove(p) and lastPos != p, positions)
-        )
+        states = []
 
         for pos in validPositions:
-            newNode = self.node.add_child(None)
-            newState = GreedyState(newNode)
+            newState = GreedyState()
             newState.data = self.data[:]
             newState.size = self.size
             newState.setPos(pos)
-            newNode.value = newState
+            states.append(newState)
 
-        return self.node.children
+        return states

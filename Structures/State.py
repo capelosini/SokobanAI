@@ -1,8 +1,7 @@
 class State:
-    def __init__(self, node):
+    def __init__(self):
         self.data = None
         self.size = [-1, -1]
-        self.node = node
 
     def successors(self):
         raise NotImplementedError
