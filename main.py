@@ -1,10 +1,8 @@
-from Game.GreedyState import GreedyState
-from Structures.Graph import Node
+from Game.Sokoban import Sokoban
 
-initState = GreedyState().from_file("input.txt")
-root = Node(initState)
+game = Sokoban("input.txt")
 
-next = initState.successors()
+next = game.initState.successors()
 
 for i in next:
     state = i
