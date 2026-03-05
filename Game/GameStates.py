@@ -1,4 +1,4 @@
-from Structures import State
+from Game.Structures import State
 
 
 class GreedyState(State):
@@ -12,7 +12,7 @@ class GreedyState(State):
         if ((pos + 1) % self.size[0]) != 0:
             positions.append(pos + 1)
 
-        if ((pos - 1) % self.size[0]) != 0:
+        if ((pos) % self.size[0]) != 0:
             positions.append(pos - 1)
 
         validPositions = list(filter(lambda p: self.canMove(p), positions))

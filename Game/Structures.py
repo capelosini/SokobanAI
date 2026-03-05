@@ -7,14 +7,14 @@ class Node:
         self.parent = None
         self.children = []
 
-    def add_child(self, value):
+    def addChild(self, value):
         newNode = Node(value)
         newNode.parent = self
 
         self.children.append(newNode)
         return newNode
 
-    def remove_child(self, node):
+    def removeChild(self, node):
         self.children.remove(node)
 
     def __str__(self):
@@ -57,7 +57,7 @@ class State:
 
         self.data.append(startPos)  # start pos var
 
-    def from_file(self, path):
+    def fromFile(self, path):
         with open(path, "r+", encoding="utf-8") as f:
             data = f.read()
 
@@ -70,15 +70,23 @@ class State:
         return "".join(data)
 
     def export(self, toFile=False, title=""):
+        data = self.data[:]
         out = ""
         i = 0
-        while i < len(self.data) - self.varCount:
-            out += str(self.data[i]) + " "
+        while i < len(data) - self.varCount:
+            if data[i] == "🙎":
+                data[i] = "-"
+            if i == self.getPos():
+                data[i] = "🙎"
+            out += str(data[i]) + " "
             i += 1
             if i % self.size[0] == 0:
                 out += "\n"
 
-        out = f"\n---- {datetime.now()} | {title}\n\n{out}"
+        if title:
+            out = f"\n---- {datetime.now()} | {title}\n\n{out}"
+        else:
+            out = f"\n\n{out}"
 
         if toFile:
             with open("outputs.txt", "a+") as f:
@@ -99,3 +107,31 @@ class Visited:
 
     def getAmount(self):
         return len(self.set)
+
+
+class Stack:
+    def __init__(self):
+        self.array = []
+
+    def size(self):
+        return len(self.array)
+
+    def push(self, value):
+        self.array.append(value)
+
+    def pop(self):
+        return self.array.pop()
+
+
+class Queue:
+    def __init__(self):
+        self.array = []
+
+    def size(self):
+        return len(self.array)
+
+    def add(self, value):
+        self.array.append(value)
+
+    def remove(self):
+        return self.array.pop(0)
