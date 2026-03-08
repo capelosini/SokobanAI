@@ -1,7 +1,7 @@
-from Game.Structures import FilaPrioridade
-from Game.Structures import Node
-from Game.Structures import Visited
-from Game.GameStates import GreedyState
+from Game.GameStates import SokobanState
+from Game.Structures import FilaPrioridade, Node, Visited
+
+
 def resultado(resultado):
     no_resultado = "🙎 - - - - 🟢🧱🧱1 8 - - 🧱 - - - - 🧱 - - - 🟢 - - -"
     if no_resultado == resultado:
@@ -9,26 +9,27 @@ def resultado(resultado):
     else:
         return False
 
+
 def dijkstra():
     no = Node()
 
     fila = FilaPrioridade()
-    fila.push(no,no.custo)
+    fila.push(no, no.custo)
     visitados = Visited()
-    
+
     while not fila.esta_vazio():
-        (prioridade,no) = fila.pop()
+        (prioridade, no) = fila.pop()
         visitados.add(no)
-        
+
         if resultado(no.value):
             return (visitados.getAmount(), no)
-        
-        nos_sucessores = GreedyState.successors(no)
+
+        nos_sucessores = SokobanState.successors(no)
 
         for no_sucessor in nos_sucessores:
             if not visitados.wasVisited(no_sucessor):
-                # fazer função de custo 
-                custo_da_aresta = 1 
+                # fazer função de custo
+                custo_da_aresta = 1
                 # custo acumulado
                 novo_custo_total = no.custo + custo_da_aresta
 
@@ -36,5 +37,5 @@ def dijkstra():
                     no_sucessor.custo = novo_custo_total
                     no_sucessor.parent = no
                     fila.push(no_sucessor, novo_custo_total)
-    
+
     return (visitados.getAmount(), None)

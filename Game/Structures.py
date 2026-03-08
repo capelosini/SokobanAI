@@ -1,4 +1,15 @@
 from datetime import datetime
+from enum import Enum
+
+from Game.Utils import isNumber
+
+
+class Directions(Enum):
+    Up = 0
+    Down = 1
+    Left = 2
+    Right = 3
+    Unknown = 4
 
 
 class Node:
@@ -8,7 +19,6 @@ class Node:
         self.children = []
         # custo do no
         self.custo = 1
-        
 
     def addChild(self, value):
         newNode = Node(value)
@@ -35,12 +45,6 @@ class State:
 
     def vector2ToIndex(self, x, y):
         return y * self.size[0] + x
-
-    def canMove(self, index):
-        if index < 0 or index >= (self.size[0] * self.size[1]):
-            return False
-
-        return self.data[index] != "🧱"
 
     def getPos(self):
         return self.data[-1]
@@ -72,7 +76,7 @@ class State:
         data = [str(d) for d in self.data]
         return "".join(data)
 
-    def export(self, toFile=False, title=""):
+    def export(self, toFile=False, title="", finalBoxesStates=[]):
         data = self.data[:]
         out = ""
         i = 0
@@ -81,6 +85,9 @@ class State:
                 data[i] = "-"
             if i == self.getPos():
                 data[i] = "🙎"
+            if i in finalBoxesStates and not isNumber([i]):
+                data[i] = "🟢"
+
             out += str(data[i]) + " "
             i += 1
             if i % self.size[0] == 0:
@@ -138,6 +145,7 @@ class Queue:
 
     def remove(self):
         return self.array.pop(0)
+
 
 class FilaPrioridade:
     def __init__(self):
