@@ -6,6 +6,9 @@ class Node:
         self.value = value
         self.parent = None
         self.children = []
+        # custo do no
+        self.custo = 1
+        
 
     def addChild(self, value):
         newNode = Node(value)
@@ -135,3 +138,75 @@ class Queue:
 
     def remove(self):
         return self.array.pop(0)
+
+class FilaPrioridade:
+    def __init__(self):
+        self.heap = []
+
+    def push(self, item, prioridade):
+        # Inserimos uma tupla (prioridade, item)
+        elemento = (prioridade, item)
+        self.heap.append(elemento)
+        # Agora precisamos "consertar" o heap subindo o elemento (Bubble Up)
+        self._subir(len(self.heap) - 1)
+
+    def pop(self):
+        if not self.heap:
+            raise IndexError("A fila está vazia")
+
+        # 1. Pega o menor item (que está sempre na raiz/índice 0)
+        menor_item = self.heap[0]
+
+        # 2. Move o último elemento da lista para a raiz
+        ultimo_item = self.heap.pop()
+
+        if self.heap:
+            self.heap[0] = ultimo_item
+            # 3. "Conserta" o heap descendo o elemento (Sink Down / Heapify)
+            self._descer(0)
+
+        # Retorna apenas o menor item
+        # (a tupla é (prioridade, item))
+        return menor_item
+
+    def _subir(self, indice):
+        # Enquanto não for a raiz
+        while indice > 0:
+            pai_indice = (indice - 1) // 2
+
+            # Se o filho for MENOR que o pai, troca (Min-Heap)
+            if self.heap[indice] < self.heap[pai_indice]:
+                self._trocar(indice, pai_indice)
+                indice = pai_indice
+            else:
+                break
+
+    def _descer(self, indice):
+        tamanho = len(self.heap)
+
+        while True:
+            menor = indice
+            esquerda = 2 * indice + 1
+            direita = 2 * indice + 2
+
+            # Verifica se o filho da esquerda existe e é menor que o atual
+            if esquerda < tamanho and self.heap[esquerda] < self.heap[menor]:
+                menor = esquerda
+
+            # Verifica se o filho da direita existe e é menor que o menor encontrado até agora
+            if direita < tamanho and self.heap[direita] < self.heap[menor]:
+                menor = direita
+
+            # Se o menor não for o índice atual, precisamos trocar e continuar descendo
+            if menor != indice:
+                self._trocar(indice, menor)
+                indice = menor
+            else:
+                # O elemento já está na posição certa (é menor que seus filhos)
+                break
+
+    def _trocar(self, i, j):
+        self.heap[i], self.heap[j] = self.heap[j], self.heap[i]
+
+    def esta_vazio(self):
+        return len(self.heap) == 0
