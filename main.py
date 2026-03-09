@@ -1,14 +1,20 @@
-from Game.GreedyState import GreedyState
-from Structures.Graph import Node
+import sys
 
-root = Node()
-initState = GreedyState(root).from_file("input.txt")
-root.value = initState
+from Game.Dijkstra import dijkstra
+from Game.Sokoban import Sokoban
 
-next = initState.successors()
+inputPath = "input.txt"
+if len(sys.argv) > 1:
+    inputPath = sys.argv[1]
 
-for i in next:
-    state = i.value
-    print(state.data)
-    for j in state.successors():
-        print(j.value.data)
+game = Sokoban(inputPath)
+# (qtd_estados_visitados, no_solucao) = dijkstra(game)
+
+
+bfsResult = game.bfs()
+game.printPathStepByStep(bfsResult)
+game.printPath(bfsResult, title="BFS", exportFile="output/BFS.txt")
+game.printPath(game.dfs(), title="DFS", exportFile="output/DFS.txt")
+game.printPath(game.dijkstra(), title="Dijkstra", exportFile="output/Dijkstra.txt")
+game.printPath(game.greedy(), title="Greedy", exportFile="output/Greedy.txt")
+game.printPath(game.aStar(), title="A*", exportFile="output/AStar.txt")
