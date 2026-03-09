@@ -1,5 +1,5 @@
 from Game.GameStates import SokobanState
-from Game.Structures import FilaPrioridade, Node, Visited
+from Game.Structures import Node, PriorityQueue, Visited
 
 
 def resultado(resultado):
@@ -13,8 +13,8 @@ def resultado(resultado):
 def dijkstra():
     no = Node()
 
-    fila = FilaPrioridade()
-    fila.push(no, no.custo)
+    fila = PriorityQueue()
+    fila.push(no, no.cost)
     visitados = Visited()
 
     while not fila.esta_vazio():

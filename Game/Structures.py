@@ -1,15 +1,7 @@
 from datetime import datetime
-from enum import Enum
 
-from Game.Utils import isNumber
-
-
-class Directions(Enum):
-    Up = 0
-    Down = 1
-    Left = 2
-    Right = 3
-    Unknown = 4
+from Game.Symbols import *
+from Game.Utils import Directions, isNumber
 
 
 class Node:
@@ -17,12 +9,12 @@ class Node:
         self.value = value
         self.parent = None
         self.children = []
-        # custo do no
-        self.custo = 1
+        self.cost = 0
 
     def addChild(self, value):
         newNode = Node(value)
         newNode.parent = self
+        newNode.cost = self.cost + value.cost
 
         self.children.append(newNode)
         return newNode
@@ -60,7 +52,7 @@ class State:
 
         self.data = [c for c in data]
 
-        startPos = self.data.index("🙎")
+        startPos = self.data.index(PLAYER)
 
         self.data.append(startPos)  # start pos var
 
@@ -76,17 +68,18 @@ class State:
         data = [str(d) for d in self.data]
         return "".join(data)
 
-    def export(self, toFile=False, title="", finalBoxesStates=[]):
+    def export(self, toFile=False, title="", finalBoxesPosition=[]):
         data = self.data[:]
         out = ""
         i = 0
+        playerPos = self.getPos()
         while i < len(data) - self.varCount:
-            if data[i] == "🙎":
-                data[i] = "-"
-            if i == self.getPos():
-                data[i] = "🙎"
-            if i in finalBoxesStates and not isNumber([i]):
-                data[i] = "🟢"
+            if data[i] == PLAYER:
+                data[i] = EMPTY
+            if i in finalBoxesPosition and not isNumber(data[i]):
+                data[i] = TARGET
+            if i == playerPos:
+                data[i] = PLAYER
 
             out += str(data[i]) + " "
             i += 1
@@ -147,7 +140,7 @@ class Queue:
         return self.array.pop(0)
 
 
-class FilaPrioridade:
+class PriorityQueue:
     def __init__(self):
         self.heap = []
 
@@ -183,7 +176,7 @@ class FilaPrioridade:
             pai_indice = (indice - 1) // 2
 
             # Se o filho for MENOR que o pai, troca (Min-Heap)
-            if self.heap[indice] < self.heap[pai_indice]:
+            if self.heap[indice][0] < self.heap[pai_indice][0]:
                 self._trocar(indice, pai_indice)
                 indice = pai_indice
             else:
@@ -198,11 +191,11 @@ class FilaPrioridade:
             direita = 2 * indice + 2
 
             # Verifica se o filho da esquerda existe e é menor que o atual
-            if esquerda < tamanho and self.heap[esquerda] < self.heap[menor]:
+            if esquerda < tamanho and self.heap[esquerda][0] < self.heap[menor][0]:
                 menor = esquerda
 
             # Verifica se o filho da direita existe e é menor que o menor encontrado até agora
-            if direita < tamanho and self.heap[direita] < self.heap[menor]:
+            if direita < tamanho and self.heap[direita][0] < self.heap[menor][0]:
                 menor = direita
 
             # Se o menor não for o índice atual, precisamos trocar e continuar descendo

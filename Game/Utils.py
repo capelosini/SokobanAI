@@ -1,3 +1,5 @@
+from enum import Enum
+
 numbersTable = {
     "1": 1,
     "2": 2,
@@ -9,6 +11,14 @@ numbersTable = {
     "8": 8,
     "9": 9,
 }
+
+
+class Directions(Enum):
+    Up = 0
+    Down = 1
+    Left = 2
+    Right = 3
+    Unknown = 4
 
 
 def isNumber(x):

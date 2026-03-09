@@ -1,15 +1,18 @@
 from Game.Structures import Directions, State
-from Game.Utils import isNumber, swap
+from Game.Symbols import *
+from Game.Utils import isNumber, numbersTable, swap
 
 
 class SokobanState(State):
     def __init__(self):
         super().__init__()
+        self.direction = None
+        self.cost = 0
 
     def getFinalBoxesPositions(self):
         positions = []
         for i in range(len(self.data)):
-            if self.data[i] == "🟢":
+            if self.data[i] == TARGET:
                 positions.append(i)
         return positions
 
@@ -58,7 +61,7 @@ class SokobanState(State):
         if (
             index < 0
             or index >= (self.size[0] * self.size[1])
-            or self.data[index] == "🧱"
+            or self.data[index] == WALL
         ):
             return False
 
@@ -103,6 +106,7 @@ class SokobanState(State):
             newState.setPos(newPos)
 
             direction = self.getDirection(pos, newPos)
+            newState.direction = direction
 
             if isNumber(self.data[newPos]):
                 indexA = newPos
@@ -117,6 +121,9 @@ class SokobanState(State):
                 elif direction == Directions.Up:
                     indexB = self.up(newPos)
                 swap(newState.data, indexA, indexB)
+                newState.cost = numbersTable[self.data[newPos]]
+
+            newState.cost += 1
 
             states.append(newState)
 
