@@ -10,9 +10,11 @@ if len(sys.argv) > 1:
 game = Sokoban(inputPath)
 # (qtd_estados_visitados, no_solucao) = dijkstra(game)
 
-print("\n-=-= DFS")
-game.printPath(game.dfs())
-print("\n-=-= BFS")
-game.printPath(game.bfs())
-print("\n-=-= Dijkstra")
-game.printPath(game.dijkstra())
+
+bfsResult = game.bfs()
+game.printPathStepByStep(bfsResult)
+game.printPath(bfsResult, title="BFS", exportFile="output/BFS.txt")
+game.printPath(game.dfs(), title="DFS", exportFile="output/DFS.txt")
+game.printPath(game.dijkstra(), title="Dijkstra", exportFile="output/Dijkstra.txt")
+game.printPath(game.greedy(), title="Greedy", exportFile="output/Greedy.txt")
+game.printPath(game.aStar(), title="A*", exportFile="output/AStar.txt")

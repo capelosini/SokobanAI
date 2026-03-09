@@ -8,13 +8,34 @@ class SokobanState(State):
         super().__init__()
         self.direction = None
         self.cost = 0
+        self.savedHeuristic = None
+        self.finalBoxesPositions = []
 
     def getFinalBoxesPositions(self):
         positions = []
         for i in range(len(self.data)):
             if self.data[i] == TARGET:
                 positions.append(i)
+
+        self.finalBoxesPositions = positions
+
         return positions
+
+    def heuristic(self):
+        if self.savedHeuristic != None:
+            return self.savedHeuristic
+        boxes = []
+        for i in range(len(self.data) - 1):
+            if isNumber(self.data[i]):
+                boxes.append(i)
+
+        score = 0
+        for i in range(len(boxes)):
+            for j in range(len(self.finalBoxesPositions)):
+                score += abs(boxes[i] - self.finalBoxesPositions[j])
+
+        self.savedHeuristic = score
+        return score
 
     def up(self, index):
         if index < 0:
@@ -104,6 +125,7 @@ class SokobanState(State):
             newState.data = self.data[:]
             newState.size = self.size
             newState.setPos(newPos)
+            newState.finalBoxesPositions = self.finalBoxesPositions
 
             direction = self.getDirection(pos, newPos)
             newState.direction = direction
@@ -121,6 +143,7 @@ class SokobanState(State):
                 elif direction == Directions.Up:
                     indexB = self.up(newPos)
                 swap(newState.data, indexA, indexB)
+                newState.data[newPos] = EMPTY
                 newState.cost = numbersTable[self.data[newPos]]
 
             newState.cost += 1

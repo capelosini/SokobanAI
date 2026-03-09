@@ -29,7 +29,7 @@ class Sokoban:
         if state.direction:
             print(DIRECTIONS[state.direction])
 
-    def printPath(self, resultNode):
+    def printPath(self, resultNode, exportFile="", title=""):
         node = resultNode
         directions = ""
         i = 0
@@ -43,11 +43,15 @@ class Sokoban:
                 exported = resultNode.value.export(
                     finalBoxesPosition=self.finalBoxesPositions
                 )
-                print(exported)
-                print(f"Movements:\n{directions}")
-                print(f"Movements Count:\n{i}")
+                out = f"\n-=-= {title}\n\n{exported}\n\nMovements:\n{directions}\nMovements Count:\n{i}\nTotal Cost:\n{resultNode.cost}"
+
                 if self.lastVisited != None:
-                    print(f"Total states:\n{self.lastVisited.getAmount()}")
+                    out += f"\nTotal states:\n{self.lastVisited.getAmount()}"
+
+                print(out)
+                if exportFile != "":
+                    with open(exportFile, "w+", encoding="utf-8") as f:
+                        f.write(out)
 
             node = node.parent
 
@@ -72,6 +76,8 @@ class Sokoban:
                     newNode = node.addChild(nextState)
                     stack.push(newNode)
 
+        raise Exception("I could not find a valid path to result")
+
     def bfs(self):
         visited = Visited()
         root = Node(self.initState)
@@ -93,6 +99,8 @@ class Sokoban:
                     visited.add(id)
                     newNode = node.addChild(nextState)
                     queue.add(newNode)
+
+        raise Exception("I could not find a valid path to result")
 
     def dijkstra(self):
         root = Node(self.initState)
@@ -119,4 +127,60 @@ class Sokoban:
                     if currentNode.cost < newNode.cost:
                         fila.push(newNode, newNode.cost)
 
-        return (visitados.getAmount(), None)
+        raise Exception("I could not find a valid path to result")
+
+    def greedy(self):
+        root = Node(self.initState)
+
+        fila = PriorityQueue()
+        fila.push(root, root.value.heuristic())
+        visitados = Visited()
+
+        while not fila.esta_vazio():
+            priority, currentNode = fila.pop()
+            state = currentNode.value
+            visitados.add(state.getId())
+
+            if self.isEnd(state):
+                self.lastVisited = visitados
+                return currentNode
+
+            newStates = state.successors()
+
+            for newState in newStates:
+                if not visitados.wasVisited(newState.getId()):
+                    visitados.add(newState.getId())
+                    newNode = currentNode.addChild(newState)
+                    currentNodeHeu = currentNode.value.heuristic()
+                    newNodeHeu = newNode.value.heuristic()
+                    fila.push(newNode, newNodeHeu)
+
+        raise Exception("I could not find a valid path to result")
+
+    def aStar(self):
+        root = Node(self.initState)
+
+        fila = PriorityQueue()
+        fila.push(root, root.value.heuristic() + root.cost)
+        visitados = Visited()
+
+        while not fila.esta_vazio():
+            priority, currentNode = fila.pop()
+            state = currentNode.value
+            visitados.add(state.getId())
+
+            if self.isEnd(state):
+                self.lastVisited = visitados
+                return currentNode
+
+            newStates = state.successors()
+
+            for newState in newStates:
+                if not visitados.wasVisited(newState.getId()):
+                    visitados.add(newState.getId())
+                    newNode = currentNode.addChild(newState)
+                    currentNodeHeu = currentNode.value.heuristic()
+                    newNodeHeu = newNode.value.heuristic()
+                    fila.push(newNode, newNodeHeu + newNode.cost)
+
+        raise Exception("I could not find a valid path to result")
